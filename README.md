@@ -4,6 +4,8 @@ Japanese BERT Pretrained Model
 
 RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)する、BERTの改良版です。モデル構造そのものはオリジナルのBERTと同じで、学習手法に工夫があります。
 
+
+
 #RoBERTa (改良BERT)  日本語モデル
 
 ***<font color='red'>New</font>***
