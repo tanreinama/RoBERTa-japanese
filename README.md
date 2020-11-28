@@ -6,7 +6,7 @@ RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)す�
 
 
 
-#RoBERTa (改良BERT)  日本語モデル
+# RoBERTa (改良BERT)  日本語モデル
 
 ***<font color='red'>New</font>***
 
@@ -208,5 +208,3 @@ $ PYTHONPATH=pretraining python pretraining/train.py --restore_from RoBERTa-ja_b
 # REFERENCE
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692)
-
-
