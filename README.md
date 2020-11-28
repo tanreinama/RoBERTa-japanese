@@ -179,7 +179,7 @@ input#0:
 
 
 
-[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順、独自のデータでモデルをさらにファインチューニングする方法です。
+[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順は、独自のデータでモデルをさらにファインチューニングする方法です。
 
 ### エンコード
 
