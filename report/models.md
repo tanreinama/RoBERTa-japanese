@@ -9,7 +9,7 @@ RoBERTa-japanese Pretrained Model
 
 
 
-Baseモデル→→→[ダウンロード](https://www.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2) （[予備URL](http://ailab.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2)）←←←
+一旦、モデルの公開は停止しています
 
 
 
