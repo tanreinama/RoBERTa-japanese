@@ -4,9 +4,7 @@ Japanese BERT Pretrained Model
 
 RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)する、BERTの改良版です。モデル構造そのものはオリジナルのBERTと同じで、学習手法に工夫があります。
 
-
-
-# RoBERTa (改良BERT)  日本語モデル
+#RoBERTa (改良BERT)  日本語モデル
 
 ***<font color='red'>New</font>***
 
@@ -146,12 +144,12 @@ RoBERTaのモデルはtransformerベースなので、入力されたBPEに対�
 すると、「--context」で指定した文章を分かち書きして、対応するBPEのベクトルの列を返します。
 
 ```sh
-$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model RoBERTa-ja_base
+$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model checkpoint/run_classifier1
 input#0:
-[[ 1.0819007   0.38114572  0.63622004 ... -1.0318996   0.23502617
-  -1.2939487 ]
- [ 0.94525665  0.77266717 -0.07639847 ... -1.4534562   0.16657324
-  -2.0074477 ]
+[[-1.5291613e+00 -3.2096574e-01 -1.0254933e+00 ...  1.6606779e+00
+  -1.5821679e-01 -5.2546853e-01]
+ [-1.3548117e+00 -1.2981821e+00 -1.3456922e+00 ...  1.8837800e+00
+  -8.6869076e-02 -6.7544264e-01]
 ・・・（略）
 ```
 
@@ -162,11 +160,12 @@ BPEではなく、文章に対応するベクトルは、「[CLS]」トークン
 文章のベクトル化を行うには、「bert-transform.py」を「--output_cls」オプションを指定して起動します。
 
 ```sh
-$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model RoBERTa-ja_base --output_cls
+$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model checkpoint/run_classifier1 --output_cls
 input#0:
-[ 6.64722979e-01  9.88517821e-01  1.56185105e-01  1.45416117e+00
- -5.38871169e-01  3.75103027e-01  3.20601881e-01  1.05292511e+00
-  1.36476326e+00 -1.14799850e-01  1.76222861e+00 -3.81214857e-01
+[-1.37854981e+00 -1.44807804e+00 -1.28895664e+00 -2.42752731e-01
+ -1.52671874e+00 -6.45978153e-02  3.82195622e-01 -1.02298462e+00
+ -1.28983960e-01  9.94315445e-01  1.64299178e+00 -9.62380469e-01
+ -1.08913469e+00  1.45287836e+00 -1.74040571e-01  1.11346889e+00
 ・・・（略）
 ```
 
@@ -178,7 +177,7 @@ input#0:
 
 
 
-[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順は、独自のデータでモデルをさらにファインチューニングする方法です。
+[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順、独自のデータでモデルをさらにファインチューニングする方法です。
 
 ### エンコード
 
@@ -207,3 +206,5 @@ $ PYTHONPATH=pretraining python pretraining/train.py --restore_from RoBERTa-ja_b
 # REFERENCE
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692)
+
+

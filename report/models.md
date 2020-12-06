@@ -9,7 +9,7 @@ RoBERTa-japanese Pretrained Model
 
 
 
-一旦、モデルの公開は停止しています
+Smallモデル→→→[ダウンロード](https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2) （[予備URL](http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2)）←←←
 
 
 
@@ -50,7 +50,7 @@ RoBERTaの論文と同じく、baseとlargeの二種類のモデルがありま�
 
 
 
-| モデル | レイヤー数       | ダウンロードURL                                              |
-| ------ | ---------------- | ------------------------------------------------------------ |
-| base   | 12heads,12layers | https://www.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2） |
+| モデル | 隠れ層次元 | レイヤー数     | ダウンロードURL                                              |
+| ------ | ---------- | -------------- | ------------------------------------------------------------ |
+| small  | 512        | 4heads,4layers | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
 

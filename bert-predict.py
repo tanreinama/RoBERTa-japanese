@@ -16,7 +16,6 @@ from encode_bpe import BPEEncoder_ja
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='RoBERTa-ja_small')
 parser.add_argument('--context', type=str, required=True)
-parser.add_argument('--output_cls', default=False, action='store_true')
 parser.add_argument('--split_tag', type=str, default='')
 parser.add_argument('--gpu', default='0', help='visible gpu number.')
 args = parser.parse_args()
@@ -77,12 +76,13 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
     _input_ids = []
     _input_masks = []
     _segments = []
-    _input_lengths = []
     _mask_positions = []
     for context in contexts:
-        context_tokens = enc.encode(context)
+        context_tokens = [enc.encode(c)+[MASK_TOKEN] for c in context.split('[MASK]')]
+        context_tokens = sum(context_tokens, [])
+        if len(context_tokens) > 1:
+            context_tokens = context_tokens[:-1]
         context_tokens = context_tokens[:max_seq_length-3]
-        _input_lengths.append(len(context_tokens))
         inputs = []
         inputs.append(CLS_TOKEN)
         inputs.extend(context_tokens)
@@ -103,18 +103,13 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
                 mask_positions.append(p)
         _mask_positions.append(mask_positions)
 
-    max_id_count = np.max(_input_lengths)+3
-    for p in range(len(_input_ids)):
-        _input_ids[p] = _input_ids[p][:max_id_count]
-        _input_masks[p] = _input_masks[p][:max_id_count]
-
     max_mask_count = np.max([len(c) for c in _mask_positions])
     for p in range(len(_mask_positions)):
         q = len(_mask_positions[p])
         if q < max_mask_count:
             _mask_positions[p].extend([0]*(max_mask_count-q))
 
-    out = sess.run(output, feed_dict={
+    prob = sess.run(log_prob, feed_dict={
         input_ids:_input_ids,
         input_mask:_input_masks,
         segment_ids:_segments,
@@ -123,10 +118,17 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
         masked_lm_weights:np.ones((len(_input_ids),max_mask_count), dtype=np.float32),
         next_sentence_labels:np.zeros((len(_input_ids),), dtype=np.int32),
     })
+    mask_count = 0
     for i in range(len(_input_ids)):
-        if args.output_cls:
-            output_vec  = out[i][0] # [CLS]のベクトル
-        else:
-            output_vec = out[i][1:_input_lengths[i]-2] # 文章部分のベクトル全体
-        print(f'input#{i}:')
-        print(output_vec)
+        result_token = []
+        for j in range(len(_input_ids[i])):
+            if CLS_TOKEN == _input_ids[i][j]:
+                pass
+            elif MASK_TOKEN == _input_ids[i][j]:
+                result_token.append(np.argmax(prob[mask_count]))
+                mask_count += 1
+            elif EOT_TOKEN <= _input_ids[i][j]:
+                break
+            else:
+                result_token.append(_input_ids[i][j])
+        print(enc.decode(result_token))

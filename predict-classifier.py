@@ -7,14 +7,13 @@ import tensorflow as tf
 import time
 import tqdm
 from tensorflow.core.protobuf import rewriter_config_pb2
+import matplotlib.pyplot as plt
 
-import pretraining.modeling as modeling
-from pretraining.modeling import BertConfig, BertModel
-from pretraining.train import get_masked_lm_output
+from model import modeling
+from model.modeling import BertConfig, BertModel
+from run_finetune import get_masked_lm_output,get_next_sentence_output
 
 from encode_bpe import BPEEncoder_ja
-
-import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='RoBERTa-ja_classifier', help='pretrained model directory.')
@@ -32,10 +31,16 @@ def main():
             bert_config_params = json.load(f)
     else:
         raise ValueError('invalid model name.')
+    if os.path.isfile(args.model+'/idmaps.json'):
+        with open(args.model+'/idmaps.json') as f:
+            idmapping_dict = json.load(f)
+    else:
+        raise ValueError('invalid model name.')
 
     vocab_size = bert_config_params['vocab_size']
     max_seq_length = bert_config_params['max_position_embeddings']
     batch_size = args.batch_size
+    EOT_TOKEN = vocab_size - 4
     MASK_TOKEN = vocab_size - 3
     CLS_TOKEN = vocab_size - 2
     SEP_TOKEN = vocab_size - 1
@@ -48,21 +53,19 @@ def main():
 
     enc = BPEEncoder_ja(bpe, emoji)
 
-    keys = [f for f in os.listdir(args.input_dir) if os.path.isdir(args.input_dir+'/'+f)]
-    keys = sorted(keys)
-    num_labels = len(keys)
+    num_labels = len(idmapping_dict)
     input_contexts = []
     input_keys = []
     input_names = []
-    for i,f in enumerate(keys):
+    for f,i in idmapping_dict.items():
         n = 0
         for t in os.listdir(f'{args.input_dir}/{f}'):
             if os.path.isfile(f'{args.input_dir}/{f}/{t}'):
                 with open(f'{args.input_dir}/{f}/{t}') as fn:
                     if args.train_by_line:
                         for ln,p in enumerate(fn.readlines()):
-                            tokens = enc.encode(p.strip())[:max_seq_length-2]
-                            tokens = [CLS_TOKEN]+tokens+[SEP_TOKEN]
+                            tokens = enc.encode(p.strip())[:max_seq_length-3]
+                            tokens = [CLS_TOKEN]+tokens+[EOT_TOKEN,SEP_TOKEN]
                             if len(tokens) < max_seq_length:
                                 tokens.extend([0]*(max_seq_length-len(tokens)))
                             input_contexts.append(tokens)
@@ -88,16 +91,17 @@ def main():
     config.gpu_options.visible_device_list = args.gpu
 
     with tf.Session(config=config) as sess:
-        input_ids = tf.placeholder(tf.int32, [batch_size, None])
-        input_mask = tf.placeholder(tf.int32, [batch_size, None])
-        segment_ids = tf.placeholder(tf.int32, [batch_size, None])
-        masked_lm_positions = tf.placeholder(tf.int32, [batch_size, None])
-        masked_lm_ids = tf.placeholder(tf.int32, [batch_size, None])
-        masked_lm_weights = tf.placeholder(tf.float32, [batch_size, None])
+        input_ids = tf.placeholder(tf.int32, [None, None])
+        input_mask = tf.placeholder(tf.int32, [None, None])
+        segment_ids = tf.placeholder(tf.int32, [None, None])
+        masked_lm_positions = tf.placeholder(tf.int32, [None, None])
+        masked_lm_ids = tf.placeholder(tf.int32, [None, None])
+        masked_lm_weights = tf.placeholder(tf.float32, [None, None])
+        next_sentence_labels = tf.placeholder(tf.int32, [None])
 
         model = BertModel(
             config=bert_config,
-            is_training=True,
+            is_training=False,
             input_ids=input_ids,
             input_mask=input_mask,
             token_type_ids=segment_ids,
@@ -105,8 +109,10 @@ def main():
 
         output = model.get_sequence_output()
         (_,_,_) = get_masked_lm_output(
-             bert_config, output, model.get_embedding_table(),
+             bert_config, model.get_sequence_output(), model.get_embedding_table(),
              masked_lm_positions, masked_lm_ids, masked_lm_weights)
+        (_,_,_) = get_next_sentence_output(
+             bert_config, model.get_pooled_output(), next_sentence_labels)
 
         saver = tf.train.Saver()
 
@@ -134,14 +140,18 @@ def main():
         def sample_feature(i):
             last = min((i+1)*batch_size,len(input_indexs))
             _input_ids = [input_contexts[idx] for idx in input_indexs[i*batch_size:last]]
+            _input_masks = [[1]*len(input_contexts[idx])+[0]*(max_seq_length-len(input_contexts[idx])) for idx in input_indexs[i*batch_size:last]]
+            _segments = [[1]*len(input_contexts[idx])+[0]*(max_seq_length-len(input_contexts[idx])) for idx in input_indexs[i*batch_size:last]]
+            _labels = [input_keys[idx] for idx in input_indexs[i*batch_size:last]]
             return {
                 input_ids:_input_ids,
-                input_mask:np.zeros((len(_input_ids),max_seq_length), dtype=np.int32),
-                segment_ids:np.zeros((len(_input_ids),max_seq_length), dtype=np.int32),
-                masked_lm_positions:np.zeros((len(_input_ids),1), dtype=np.int32),
-                masked_lm_ids:np.zeros((len(_input_ids),1), dtype=np.int32),
-                masked_lm_weights:np.zeros((len(_input_ids),1), dtype=np.int32),
-                labels:np.zeros((len(_input_ids),), dtype=np.int32)
+                input_mask:_input_masks,
+                segment_ids:_segments,
+                masked_lm_positions:np.zeros((len(_input_ids),0), dtype=np.int32),
+                masked_lm_ids:np.zeros((len(_input_ids),0), dtype=np.int32),
+                masked_lm_weights:np.ones((len(_input_ids),0), dtype=np.float32),
+                next_sentence_labels:np.zeros((len(_input_ids),), dtype=np.int32),
+                labels:_labels
             }
 
         preds = []
