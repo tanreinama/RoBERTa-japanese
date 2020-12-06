@@ -227,5 +227,3 @@ $ python run_finetune.py --base_model RoBERTa-ja_small --dataset funetune.npz --
 # REFERENCE
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692)
-
-check
