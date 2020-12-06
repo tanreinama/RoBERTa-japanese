@@ -46,11 +46,11 @@ RoBERTaの、BERTからの改良点は学習手法の改良のみで、モデル
 
 RoBERTaの論文と同じく、baseとlargeの二種類のモデルがあります。レイヤー数はオリジナルと同じですが、語彙数が異なるため、出力層のlogitsのパラメーター数が異なり、総パラメーター数もオリジナルと異なっています。
 
-現在、baseモデルは公開中、largeモデルは学習中です。largeモデルも学習が終わり次第公開する予定です。
+現在、smallモデルは公開中、baseモデルは学習中です。baseモデルも学習が終わり次第公開する予定です。
 
 
 
-| モデル | 隠れ層次元 | レイヤー数     | ダウンロードURL                                              |
-| ------ | ---------- | -------------- | ------------------------------------------------------------ |
-| small  | 512        | 4heads,4layers | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
+| モデル | 隠れ層次元 | レイヤー数     | バッチサイズ | 学習回数 | ダウンロードURL                                              |
+| ------ | ---------- | -------------- | ------------ | -------- | ------------------------------------------------------------ |
+| small  | 512        | 4heads,4layers | 16           | 330K     | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
 
