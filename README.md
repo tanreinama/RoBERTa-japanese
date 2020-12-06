@@ -4,11 +4,13 @@ Japanese BERT Pretrained Model
 
 RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)する、BERTの改良版です。モデル構造そのものはオリジナルのBERTと同じで、学習手法に工夫があります。
 
-#RoBERTa (改良BERT)  日本語モデル
+
+
+# RoBERTa (改良BERT)  日本語モデル
 
 ***<font color='red'>New</font>***
 
-- [事前学習済みbaseモデルを公開しました](report/models.md)
+- [事前学習済みsmallモデルを公開しました](report/models.md)
 
 
 
@@ -20,7 +22,7 @@ RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)す�
 
 ### TODO
 
-✓baseモデルの公開（2020/11/28）<br>□largeモデルの公開<br>
+✓smallモデルの公開（2020/12/6）<br>□baseモデルの公開<br>□largeモデルの公開<br>
 
 
 
@@ -38,8 +40,8 @@ $ cd RoBERTa-japanese
 モデルファイルをダウンロードして展開します
 
 ```sh
-$ wget https://www.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2
-$ tar xvfj RoBERTa-ja_base.tar.bz2
+$ wget https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2
+$ tar xvfj RoBERTa-ja_small.tar.bz2
 ```
 
 分かち書きに使う[Japanese-BPEEncoder](https://github.com/tanreinama/Japanese-BPEEncoder)をコピーします
@@ -85,7 +87,7 @@ $ ls text/
 学習したモデルは、「checkpoint」以下の「--run_name」で指定したディレクトリ内に保存されます。
 
 ```sh
-$ PYTHONPATH=pretraining python train-classifier.py --input text --model RoBERTa-ja_base --run_name run_classifier1
+$ python train-classifier.py --input text --model RoBERTa-ja_small --run_name run_classifier1
 ```
 
 以下のようにサブディレクトリ名とクラスIDとの対応が表示された後、学習が進みます。
@@ -109,7 +111,7 @@ text/topic-news mapped for id_8, read 771 contexts.
 推論は、「predict-classifier.py」を実行します。入力テキストの形式は学習時と同じです。
 
 ```sh
-$ PYTHONPATH=pretraining python predict-classifier.py --input text --model checkpoint/run_classifier1
+$ python predict-classifier.py --input text --model checkpoint/run_classifier1
 ```
 
 出力先は、分類結果のcsvファイルで、デフォルトは「predict.csv」です。
@@ -144,12 +146,14 @@ RoBERTaのモデルはtransformerベースなので、入力されたBPEに対�
 すると、「--context」で指定した文章を分かち書きして、対応するBPEのベクトルの列を返します。
 
 ```sh
-$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model checkpoint/run_classifier1
+$ python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model RoBERTa-ja_small
 input#0:
-[[-1.5291613e+00 -3.2096574e-01 -1.0254933e+00 ...  1.6606779e+00
-  -1.5821679e-01 -5.2546853e-01]
- [-1.3548117e+00 -1.2981821e+00 -1.3456922e+00 ...  1.8837800e+00
-  -8.6869076e-02 -6.7544264e-01]
+[[ 0.5992917   1.1643333   1.0709919  ... -0.5617913  -1.6860669
+  -1.0066426 ]
+ [ 0.8676284   0.6567531   0.78134054 ... -0.36112523  0.5062537
+  -0.7661339 ]
+ [ 0.01888545  0.36276647  1.0901756  ... -0.43237013 -0.6199492
+   0.5220407 ]
 ・・・（略）
 ```
 
@@ -160,12 +164,12 @@ BPEではなく、文章に対応するベクトルは、「[CLS]」トークン
 文章のベクトル化を行うには、「bert-transform.py」を「--output_cls」オプションを指定して起動します。
 
 ```sh
-$ PYTHONPATH=pretraining python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model checkpoint/run_classifier1 --output_cls
+$ python bert-transform.py --context "俺の名前は坂本俊之。何処にでもいるサラリーマンだ。" --model RoBERTa-ja_small --output_cls
 input#0:
-[-1.37854981e+00 -1.44807804e+00 -1.28895664e+00 -2.42752731e-01
- -1.52671874e+00 -6.45978153e-02  3.82195622e-01 -1.02298462e+00
- -1.28983960e-01  9.94315445e-01  1.64299178e+00 -9.62380469e-01
- -1.08913469e+00  1.45287836e+00 -1.74040571e-01  1.11346889e+00
+[ 1.32353395e-01  7.29551390e-02  9.68794107e-01  5.04402256e+00
+ -1.01897776e+00  8.78318697e-02  4.57099319e-01 -6.86461449e-01
+ -3.92494529e-01 -1.96973538e+00 -7.71282613e-01 -9.75184321e-01
+ -6.08122528e-01  5.63387752e-01 -1.22797883e+00  1.38058096e-01
 ・・・（略）
 ```
 
@@ -173,11 +177,28 @@ input#0:
 
 
 
+## テキストの穴埋め
+
+
+
+RoBERTaのモデルは入力されたテキスト内の「[MASK]」部分を予測します。
+
+「bert-predict.py」で、直接穴埋め問題を解かせることが出来ます。
+
+「[MASK]」一つでエンコード後のBPE一つなので、「[MASK]」が日本語2文字か1文字になります。
+
+```sh
+$ python bert-predict.py --context "俺の名前は坂本[MASK]。何処にでもいるサラリー[MASK]だ。" --model RoBERTa-ja_small
+俺の名前は坂本だ。何処にでもいるサラリーマンだ。
+```
+
+
+
 ##  モデルのファインチューニング
 
 
 
-[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順、独自のデータでモデルをさらにファインチューニングする方法です。
+[コーパス2020](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)でプレトレーニングしたモデルは公開しています。ここでの手順は、独自のデータでモデルをさらにファインチューニングする方法です。
 
 ### エンコード
 
@@ -193,10 +214,10 @@ $ cd ..
 
 ### 学習
 
-「--restore_from」に元のプレトレーニング済みモデルを、「--model」にモデルの種類を、「--dataset 」にエンコードしたファイルを指定して、「pretraining/train.py」を起動します。
+「--base_model」に元のプレトレーニング済みモデルを「--dataset 」にエンコードしたファイルを指定して、「run_finetune.py」を起動します。
 
 ```sh
-$ PYTHONPATH=pretraining python pretraining/train.py --restore_from RoBERTa-ja_base --model base --dataset funetune.npz --run_name RoBERTa-finetune_run1
+$ python run_finetune.py --base_model RoBERTa-ja_small --dataset funetune.npz --run_name RoBERTa-finetune_run1
 ```
 
 学習したモデルは、「checkpoint」以下の「--run_name」で指定したディレクトリ内に保存されます。
@@ -207,4 +228,4 @@ $ PYTHONPATH=pretraining python pretraining/train.py --restore_from RoBERTa-ja_b
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692)
 
-
+check
