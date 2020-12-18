@@ -103,16 +103,13 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
                 mask_positions.append(p)
         _mask_positions.append(mask_positions)
 
-    max_id_count = np.max(_input_lengths)+3
-    for p in range(len(_input_ids)):
-        _input_ids[p] = _input_ids[p][:max_id_count]
-        _input_masks[p] = _input_masks[p][:max_id_count]
-
-    max_mask_count = np.max([len(c) for c in _mask_positions])
+    max_mask_count = max(1,np.max([len(c) for c in _mask_positions]))
     for p in range(len(_mask_positions)):
         q = len(_mask_positions[p])
         if q < max_mask_count:
             _mask_positions[p].extend([0]*(max_mask_count-q))
+
+    print(max_mask_count)
 
     out = sess.run(output, feed_dict={
         input_ids:_input_ids,
