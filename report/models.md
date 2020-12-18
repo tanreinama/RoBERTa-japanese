@@ -52,5 +52,5 @@ RoBERTaの論文と同じく、baseとlargeの二種類のモデルがありま�
 
 | モデル | 隠れ層次元 | レイヤー数     | 学習バッチサイズ | 学習回数 | ダウンロードURL                                              |
 | ------ | ---------- | -------------- | ---------------- | -------- | ------------------------------------------------------------ |
-| small  | 512        | 4heads,4layers | 16               | 330K     | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
+| small  | 512        | 4heads,4layers | 16K              | 330K     | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
 

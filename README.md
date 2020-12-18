@@ -4,6 +4,8 @@ Japanese BERT Pretrained Model
 
 RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)する、BERTの改良版です。モデル構造そのものはオリジナルのBERTと同じで、学習手法に工夫があります。
 
+このプロジェクトは、[スポンサーを募集しています](report/sponsor.md)。
+
 
 
 # RoBERTa (改良BERT)  日本語モデル
@@ -11,6 +13,8 @@ RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)す�
 ***<font color='red'>New</font>***
 
 - [事前学習済みsmallモデルを公開しました](report/models.md)
+
+- [GitHub Sponserによるスポンサーシップを開始しました](https://github.com/sponsors/tanreinama)
 
 
 
@@ -20,9 +24,19 @@ RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)す�
 
 [report/models.md](report/models.md)
 
+### 学習させたコーパスについて
+
+[report/corpus.md](https://github.com/tanreinama/gpt2-japanese/blob/master/report/corpus.md)
+
+### スポンサーシップについて
+
+[report/sponsor.md](report/sponsor.md)
+
+
+
 ### TODO
 
-✓smallモデルの公開（2020/12/6）<br>□baseモデルの公開<br>□largeモデルの公開<br>
+✓smallモデルの公開（2020/12/6）<br>□baseモデルの公開<br>
 
 
 
