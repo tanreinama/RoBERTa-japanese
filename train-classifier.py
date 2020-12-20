@@ -125,7 +125,7 @@ def main():
         ckpt = tf.train.latest_checkpoint(args.model)
         saver.restore(sess, ckpt)
 
-        labels = tf.placeholder(tf.int32, [batch_size, ])
+        labels = tf.placeholder(tf.int32, [None, ])
 
         output_layer = model.get_pooled_output()
 
