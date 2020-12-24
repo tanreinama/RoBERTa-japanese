@@ -231,7 +231,7 @@ $ cd ..
 「--base_model」に元のプレトレーニング済みモデルを「--dataset 」にエンコードしたファイルを指定して、「run_finetune.py」を起動します。
 
 ```sh
-$ python run_finetune.py --base_model RoBERTa-ja_small --dataset funetune.npz --run_name RoBERTa-finetune_run1
+$ python run_finetune.py --base_model RoBERTa-ja_small --dataset finetune.npz --run_name RoBERTa-finetune_run1
 ```
 
 学習したモデルは、「checkpoint」以下の「--run_name」で指定したディレクトリ内に保存されます。
