@@ -9,7 +9,7 @@ RoBERTa-japanese Pretrained Model
 
 
 
-Smallモデル→→→[ダウンロード](https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2) （[予備URL](http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2)）←←←
+Baseモデル→→→[ダウンロード](https://www.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2) （[予備URL](http://ailab.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2)）←←←
 
 
 
@@ -44,13 +44,12 @@ RoBERTaの、BERTからの改良点は学習手法の改良のみで、モデル
 
 
 
-RoBERTaの論文と同じく、baseとlargeの二種類のモデルがあります。レイヤー数はオリジナルと同じですが、語彙数が異なるため、出力層のlogitsのパラメーター数が異なり、総パラメーター数もオリジナルと異なっています。
-
-現在、smallモデルは公開中、baseモデルは学習中です。baseモデルも学習が終わり次第公開する予定です。
+現在、smallとbaseの二種類のモデルがあります。モデルサイズが異なるため、学習の際にGPUメモリ上に乗せられるバッチサイズが異なっており、出来るだけ大きなバッチサイズで学習させるようにしました。また、総backward step数が同じ程度になる回数学習させましたが、バッチサイズとiter数が異なるので、learning rateも微調整しています。
 
 
 
-| モデル | 隠れ層次元 | レイヤー数     | 学習バッチサイズ | 学習回数 | ダウンロードURL                                              |
-| ------ | ---------- | -------------- | ---------------- | -------- | ------------------------------------------------------------ |
-| small  | 512        | 4heads,4layers | 16K              | 330K     | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
+| モデル | 隠れ層次元 | レイヤー数       | 学習バッチサイズ | 学習回数 | ダウンロードURL                                              |
+| ------ | ---------- | ---------------- | ---------------- | -------- | ------------------------------------------------------------ |
+| small  | 512        | 4heads,4layers   | 16K              | 330K     | https://www.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_small.tar.bz2） |
+| base   | 768        | 12heads,12layers | 4K               | 1.34M    | https://www.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2<br />（予備URL：http://ailab.nama.ne.jp/models/RoBERTa-ja_base.tar.bz2） |
 
