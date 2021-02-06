@@ -16,6 +16,8 @@ RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)す�
 
 - [事前学習済みbaseモデルを公開しました](report/models.md)
 
+- Tensorflow 1.x/2.x両対応しました
+
   
 
 

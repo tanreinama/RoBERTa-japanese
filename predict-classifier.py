@@ -3,7 +3,7 @@ import json
 import os
 import numpy as np
 import pandas as pd
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import time
 import tqdm
 from tensorflow.core.protobuf import rewriter_config_pb2
@@ -120,7 +120,10 @@ def main():
 
         output_layer = model.get_pooled_output()
 
-        hidden_size = output_layer.shape[-1].value
+        if int(tf.__version__[0]) > 1:
+            hidden_size = output_layer.shape[-1]
+        else:
+            hidden_size = output_layer.shape[-1].value
 
         output_weights = tf.get_variable(
           "output_weights", [num_labels, hidden_size],

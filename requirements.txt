@@ -1,4 +1,6 @@
 tqdm
+pandas
+matplotlib
 numpy
 jaconv
-tensorflow-gpu==1.15.3
+tensorflow

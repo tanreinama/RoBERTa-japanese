@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import time
 import tqdm
 from tensorflow.core.protobuf import rewriter_config_pb2
