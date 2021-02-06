@@ -124,6 +124,9 @@ def main():
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(args.model)
         saver.restore(sess, ckpt)
+        restored_weights = {}
+        for i in range(len(train_vars)):
+            restored_weights[train_vars[i].name] = sess.run(train_vars[i])
 
         labels = tf.placeholder(tf.int32, [None, ])
 
@@ -176,6 +179,14 @@ def main():
                 fp.write(json.dumps(idmapping_dict))
 
             sess.run(tf.global_variables_initializer()) # init output_weights
+            restored = 0
+            for k,v in restored_weights.items():
+                for i in range(len(train_vars)):
+                    if train_vars[i].name == k:
+                        assign_op = train_vars[i].assign(v)
+                        sess.run(assign_op)
+                        restored += 1
+            assert restored == len(restored_weights), 'fail to restore model.'
             saver = tf.train.Saver(var_list=tf.trainable_variables())
 
             def save():
