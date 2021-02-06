@@ -124,6 +124,7 @@ def main():
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(args.model)
         saver.restore(sess, ckpt)
+        train_vars = tf.trainable_variables()
         restored_weights = {}
         for i in range(len(train_vars)):
             restored_weights[train_vars[i].name] = sess.run(train_vars[i])
