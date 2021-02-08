@@ -29,6 +29,8 @@ import tensorflow.compat.v1 as tf
 
 if int(tf.__version__[0]) > 1:
     from .layer_norm import layer_norm as compat_layer_norm
+else:
+    from tensorflow.contrib.layers import layer_norm as compat_layer_norm
 
 class BertConfig(object):
   """Configuration for `BertModel`."""
@@ -363,11 +365,7 @@ def dropout(input_tensor, dropout_prob):
 
 def layer_norm(input_tensor, name=None):
   """Run layer normalization on the last dimension of the tensor."""
-  if int(tf.__version__[0]) > 1:
-    return compat_layer_norm(
-      inputs=input_tensor, begin_norm_axis=-1, begin_params_axis=-1, scope=name)
-  else:
-    return tf.contrib.layers.layer_norm(
+  return compat_layer_norm(
       inputs=input_tensor, begin_norm_axis=-1, begin_params_axis=-1, scope=name)
 
 
