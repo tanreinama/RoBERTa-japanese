@@ -51,10 +51,10 @@ def main():
     CLS_TOKEN = vocab_size - 2
     SEP_TOKEN = vocab_size - 1
 
-    with open('ja-bpe.txt') as f:
+    with open('ja-bpe.txt', encoding='utf-8') as f:
         bpe = f.read().split('\n')
 
-    with open('emoji.json') as f:
+    with open('emoji.json', encoding='utf-8') as f:
         emoji = json.loads(f.read())
 
     enc = BPEEncoder_ja(bpe, emoji)
@@ -69,7 +69,7 @@ def main():
         n = 0
         for t in os.listdir(f'{args.input_dir}/{f}'):
             if os.path.isfile(f'{args.input_dir}/{f}/{t}'):
-                with open(f'{args.input_dir}/{f}/{t}') as fn:
+                with open(f'{args.input_dir}/{f}/{t}', encoding='utf-8') as fn:
                     if args.train_by_line:
                         for p in fn.readlines():
                             tokens = enc.encode(p.strip())[:max_seq_length-2]
