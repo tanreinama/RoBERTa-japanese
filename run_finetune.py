@@ -235,23 +235,43 @@ def main():
         print('Loading checkpoint', ckpt)
 
         print('Loading dataset...')
-        global_chunks = []
-        with np.load(args.dataset) as npz:
-            for inditem, item in enumerate(npz.files):
-                token_chunk = npz[item]
-                current_token = [np.uint16(CLS_TOKEN)]
-                for ind in range(0,len(token_chunk)):
-                  current_token.append(np.uint16(token_chunk[ind]))
-                  if len(current_token) == max_seq_length:
-                      global_chunks.append(current_token)
-                      current_token = [np.uint16(CLS_TOKEN)]
-                  if token_chunk[ind]==EOT_TOKEN:
-                      current_token.append(np.uint16(SEP_TOKEN))
-                  if len(current_token) == max_seq_length:
-                      global_chunks.append(current_token)
-                      current_token = [np.uint16(CLS_TOKEN)]
-        global_chunk_index = np.random.permutation(len(global_chunks))
+        global_chunks = np.load(args.dataset)
+        global_chunk_index = copy(global_chunks.files)
         global_chunk_step = 0
+        global_epochs = 0
+        np.random.shuffle(global_chunk_index)
+
+        def get_epoch():
+            return global_epochs + (1 - len(global_chunk_index) / len(global_chunks.files))
+
+        def pop_feature():
+            nonlocal global_chunks,global_chunk_index,global_chunk_step, global_epochs
+            # FULL-SENTENCES
+            token = [np.uint16(CLS_TOKEN)]
+            chunk = global_chunks[global_chunk_index[-1]][global_chunk_step:].astype(np.uint16)
+            if len(chunk) >= max_seq_length-1:
+                token.extend(chunk[:max_seq_length-1].tolist())
+                global_chunk_step += max_seq_length-1
+            else:
+                if len(chunk) > 0:
+                    token.extend(chunk.tolist())
+                    token.append(np.uint16(EOT_TOKEN))
+                    global_chunk_step += len(chunk)+1
+                while len(token) < max_seq_length:
+                    global_chunk_index.pop()
+                    global_chunk_step = 0
+                    if len(global_chunk_index) == 0:
+                        global_chunk_index = copy(global_chunks.files)
+                        np.random.shuffle(global_chunk_index)
+                        global_epochs += 1
+                    cur = len(token)
+                    chunk = global_chunks[global_chunk_index[-1]].astype(np.uint16)
+                    token.extend(chunk[:max_seq_length-cur].tolist())
+                    global_chunk_step += max_seq_length-cur
+                    if len(token) < max_seq_length:
+                        token.append(np.uint16(EOT_TOKEN))
+            return token
+
         print('Training...')
 
         def sample_feature():
@@ -266,14 +286,9 @@ def main():
             p_next_sentence_labels = [0] * batch_size
 
             for b in range(batch_size): # FULL-SENTENCES
-                idx = global_chunk_index[global_chunk_step]
-                global_chunk_step += 1
-                if global_chunk_step >= len(global_chunk_index):
-                    global_chunk_step = 0
-                    global_chunk_index = np.random.permutation(len(global_chunks))
-                sampled_token = global_chunks[idx]
+                sampled_token = pop_feature()
                 # Make Sequence
-                ids = copy(global_chunks[idx])
+                ids = copy(sampled_token)
                 masks = [1]*len(ids)
                 segments = [1]*len(ids)
                 # Make Masks
