@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='RoBERTa-ja_small')
 parser.add_argument('--context', type=str, required=True)
 parser.add_argument('--split_tag', type=str, default='')
+parser.add_argument('--output_file', type=str, default='')
 parser.add_argument('--gpu', default='0', help='visible gpu number.')
 args = parser.parse_args()
 
@@ -29,6 +30,9 @@ EOT_TOKEN = vocab_size - 4
 MASK_TOKEN = vocab_size - 3
 CLS_TOKEN = vocab_size - 2
 SEP_TOKEN = vocab_size - 1
+
+if os.path.isfile(args.context):
+    args.context = open(args.context).read()
 
 config = tf.ConfigProto()
 config.gpu_options.visible_device_list = args.gpu
@@ -109,6 +113,10 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
         if q < max_mask_count:
             _mask_positions[p].extend([0]*(max_mask_count-q))
 
+    outf = False
+    if args.output_file != "":
+        outf = open(args.output_file, "w")
+
     prob = sess.run(log_prob, feed_dict={
         input_ids:_input_ids,
         input_mask:_input_masks,
@@ -131,4 +139,8 @@ with tf.Session(config=config,graph=tf.Graph()) as sess:
                 break
             else:
                 result_token.append(_input_ids[i][j])
-        print(enc.decode(result_token))
+        oo = enc.decode(result_token)
+        print(oo)
+        if outf:
+            outf.write(oo+'\n')
+            outf.flush()
