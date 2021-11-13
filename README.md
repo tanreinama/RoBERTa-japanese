@@ -2,6 +2,14 @@
 
 Japanese BERT Pretrained Model
 
+
+
+## 後継プロジェクト → [aMLP-japanese](https://github.com/tanreinama/aMLP-japanese)
+
+### 同じように使える学習済みモデルがあります。新規開発またはTF2環境では[こちら](https://github.com/tanreinama/aMLP-japanese)を使うことを推奨します。
+
+
+
 RoBERTaとは、[Liu, Yinhanらが提案](https://arxiv.org/abs/1907.11692)する、BERTの改良版です。モデル構造そのものはオリジナルのBERTと同じで、学習手法に工夫があります。
 
 このプロジェクトは、[スポンサーを募集しています](https://github.com/tanreinama/gpt2-japanese/blob/master/report/sponsor.md)。
